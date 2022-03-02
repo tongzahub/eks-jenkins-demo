@@ -2,9 +2,11 @@
 pipeline{
 
 	 environment {
-    registry = "tongzahub/eks-jenkins-demo"
-    registryCredential = 'docker-user-pass'
-    dockerImage = ''
+    	registry = "tongzahub/eks-jenkins-demo"
+    	registryCredential = 'docker-user-pass'
+    	dockerImage = ''
+		region = "ap-southeast-1"
+		clusterName  = "arthit-devops-labs"
   	}
 
 	agent any
@@ -30,28 +32,18 @@ pipeline{
 			steps {
 				 script {
             		docker.withRegistry( '', registryCredential ) {
-           			 dockerImage.push()
+           			dockerImage.push()
          		 }
 			}
 		}
 
 		}
         
-        // stage('login') {
-
-        //     steps {
-        
-		//         withCredentials([string(credentialsId: 'docker-user-pass', variable: 'PASSWORD')]) {
-        //             sh 'sudo docker login -u tongzahub -p $PASSWORD'
-        //         }
-        //     }
-        // }
-		// stage('Push') {
-
-		// 	steps {
-		// 		sh 'sudo docker push tongzahub/eks-jenkins-demo:eks'
-		// 	}
-		// }
+		stage('Remove Unused docker image') {
+     		 steps{
+        		sh "docker rmi $registry:$BUILD_NUMBER"
+     	 	}
+   		}
 
 		stage('aws creadentials'){
 			  steps {
@@ -66,6 +58,7 @@ pipeline{
 			// 	}
 			  withAWS(credentials: 'eks-credentials', region: 'ap-southeast-1') {
 
+				  sh "aws eks --region $region update-kubeconfig --name $clusterName"
 
 				  
 			  }
@@ -78,7 +71,7 @@ pipeline{
 
 			steps {
 				sh 'echo Hello World'
-				// sh 'kubectl get -o yaml deploy/hello-world-nodejs > deploy.yaml'
+				sh 'kubectl get pods'
                 // sh "sed -i 's/hellonodejs:latest/hellonodejs:eks/g' deploy.yaml"
                 // sh 'kubectl apply -f deploy.yaml'
                 // sh 'kubectl rollout restart deployment hello-world-nodejs'
