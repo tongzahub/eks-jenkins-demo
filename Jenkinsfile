@@ -14,36 +14,31 @@ pipeline{
 	stages {
 
 
-		stage('Build') {
-			steps {
-			script {
-         		 dockerImage = docker.build registry + ":$BUILD_NUMBER"
-       		 }   
-			}
-		}
+		// stage('Build') {
+		// 	steps {
+		// 	script {
+        //  		 dockerImage = docker.build registry + ":$BUILD_NUMBER"
+       	// 	 }   
+		// 	}
+		// }
+  
 
-		// stage('Test image') {           
-        //     app.inside {            
-        //      sh 'echo "Tests passed"'        
-        //     }    
-        // }     
+		// stage('Push image') {
+		// 	steps {
+		// 		 script {
+        //     		docker.withRegistry( '', registryCredential ) {
+        //    			dockerImage.push()
+        //  		 }
+		// 	}
+		// }
 
-		stage('Push image') {
-			steps {
-				 script {
-            		docker.withRegistry( '', registryCredential ) {
-           			dockerImage.push()
-         		 }
-			}
-		}
-
-		}
+		// }
         
-		stage('Remove Unused docker image') {
-     		 steps{
-        		sh "docker rmi $registry:$BUILD_NUMBER"
-     	 	}
-   		}
+		// stage('Remove Unused docker image') {
+     	// 	 steps{
+        // 		sh "docker rmi $registry:$BUILD_NUMBER"
+     	//  	}
+   		// }
 
 		stage('aws creadentials'){
 			  steps {
@@ -58,6 +53,8 @@ pipeline{
 			// 	}
 			  withAWS(credentials: 'eks-credentials', region: 'ap-southeast-1') {
 
+
+				  sh "aws iam list-account-aliases"
 				  sh "aws eks --region $region update-kubeconfig --name $clusterName"
 
 				  
