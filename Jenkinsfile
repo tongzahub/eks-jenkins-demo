@@ -10,10 +10,8 @@ pipeline{
 	agent any
 	def app   
 	
-	stages {
 
 		stage('Build') {
-
 			steps {
 			script {
          		 dockerImage = docker.build registry + ":$BUILD_NUMBER"
@@ -28,7 +26,7 @@ pipeline{
         // }     
 
 		stage('Push image') {
-			step {
+			steps {
 				 script {
             		docker.withRegistry( '', registryCredential ) {
            			 dockerImage.push()
