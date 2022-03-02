@@ -41,8 +41,6 @@ pipeline{
 			// 	]]) {
    			// 		 // AWS Code
 			// 	}
-			  
-
 			  withAWS(credentials: 'eks-credentials', region: 'ap-southeast-1') {
 
 
@@ -56,6 +54,7 @@ pipeline{
         stage('eks deploy') {
 
 			steps {
+				sh 'echo Hello World'
 				// sh 'kubectl get -o yaml deploy/hello-world-nodejs > deploy.yaml'
                 // sh "sed -i 's/hellonodejs:latest/hellonodejs:eks/g' deploy.yaml"
                 // sh 'kubectl apply -f deploy.yaml'
