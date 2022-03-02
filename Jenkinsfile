@@ -60,6 +60,7 @@ pipeline{
 				//   sh "cp /var/lib/jenkins/.kube/config  /home/ubuntu/.kube/config"
 
 				  sh 'kubectl get pods'
+				   sh 'kubectl get nodes'
 				  
 			  }
 
