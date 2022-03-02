@@ -2,33 +2,48 @@
 pipeline{
 
 	agent any
-
+	def app   
 	
 	stages {
 
 		stage('Build') {
 
 			steps {
-				sh 'sudo docker build -t tongzahub/eks-jenkins-demo:eks .'
-               
+				// sh 'sudo docker build -t tongzahub/eks-jenkins-demo:eks .'
+                app = docker.build("tongzahub/eks-jenkins-demo")    
 			}
 		}
-        
-        stage('login') {
 
-            steps {
-        
-		        withCredentials([string(credentialsId: 'docker-user-pass', variable: 'PASSWORD')]) {
-                    sh 'sudo docker login -u tongzahub -p $PASSWORD'
-                }
-            }
-        }
-		stage('Push') {
+		stage('Test image') {           
+            app.inside {            
+             sh 'echo "Tests passed"'        
+            }    
+        }     
 
-			steps {
-				sh 'sudo docker push tongzahub/eks-jenkins-demo:eks'
-			}
+		stage('Push image') {
+			docker.withRegistry('https://registry.hub.docker.com', 'docker-user-pass') { 
+      			 app.push("${env.BUILD_NUMBER}")            
+       			 app.push("latest")        
+              }    
+           }
 		}
+
+        
+        // stage('login') {
+
+        //     steps {
+        
+		//         withCredentials([string(credentialsId: 'docker-user-pass', variable: 'PASSWORD')]) {
+        //             sh 'sudo docker login -u tongzahub -p $PASSWORD'
+        //         }
+        //     }
+        // }
+		// stage('Push') {
+
+		// 	steps {
+		// 		sh 'sudo docker push tongzahub/eks-jenkins-demo:eks'
+		// 	}
+		// }
 
 		stage('aws creadentials'){
 			  steps {
