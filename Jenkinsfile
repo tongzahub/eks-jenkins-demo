@@ -56,7 +56,10 @@ pipeline{
 
 				  sh "aws iam list-account-aliases"
 				  sh "aws eks --region $region update-kubeconfig --name $clusterName"
+				  
+				  sh "cp /var/lib/jenkins/.kube/config  /home/ubuntu/.kube/config"
 
+				  sh 'kubectl get pods'
 				  
 			  }
 
