@@ -1,6 +1,12 @@
 
 pipeline{
 
+	 environment {
+    registry = "tongzahub/eks-jenkins-demo"
+    registryCredential = 'docker-user-pass'
+    dockerImage = ''
+  }
+
 	agent any
 	def app   
 	
@@ -9,25 +15,28 @@ pipeline{
 		stage('Build') {
 
 			steps {
-				// sh 'sudo docker build -t tongzahub/eks-jenkins-demo:eks .'
-                app = docker.build("tongzahub/eks-jenkins-demo")    
+			script {
+         		 dockerImage = docker.build registry + ":$BUILD_NUMBER"
+       		 }   
 			}
 		}
 
-		stage('Test image') {           
-            app.inside {            
-             sh 'echo "Tests passed"'        
-            }    
-        }     
+		// stage('Test image') {           
+        //     app.inside {            
+        //      sh 'echo "Tests passed"'        
+        //     }    
+        // }     
 
 		stage('Push image') {
-			docker.withRegistry('https://registry.hub.docker.com', 'docker-user-pass') { 
-      			 app.push("${env.BUILD_NUMBER}")            
-       			 app.push("latest")        
-              }    
-           }
+			step {
+				 script {
+            		docker.withRegistry( '', registryCredential ) {
+           			 dockerImage.push()
+         		 }
+			}
 		}
 
+		}
         
         // stage('login') {
 
