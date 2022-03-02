@@ -5,12 +5,14 @@ pipeline{
     registry = "tongzahub/eks-jenkins-demo"
     registryCredential = 'docker-user-pass'
     dockerImage = ''
-  }
+  	}
 
 	agent any
 	def app   
 	
+	stages {
 
+		
 		stage('Build') {
 			steps {
 			script {
@@ -85,14 +87,6 @@ pipeline{
 		}
 	}
 
-	post {
-		always {
-
-            		cleanWs()
-			
-            		echo "done"
-		}
-	}
 
 }
 
